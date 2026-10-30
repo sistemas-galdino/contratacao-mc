@@ -2,8 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useSession } from "@/hooks/use-session";
+
+// Contas são criadas pelo administrador (npm run usuario:adicionar); não há cadastro aberto.
+// O login com Google é opcional: exige o provedor Google ativo no Supabase (veja docs/INSTALACAO.md).
+const GOOGLE_LOGIN = import.meta.env["VITE_GOOGLE_LOGIN"] === "true";
 
 export const Route = createFileRoute("/entrar")({
   head: () => ({
@@ -27,8 +30,6 @@ export const Route = createFileRoute("/entrar")({
 function EntrarPage() {
   const navigate = useNavigate();
   const { session } = useSession();
-  const [mode, setMode] = useState<"entrar" | "criar">("entrar");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -41,20 +42,13 @@ function EntrarPage() {
     event.preventDefault();
     setBusy(true);
     try {
-      if (mode === "criar") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { full_name: name },
-          },
-        });
-        if (error) throw error;
-        toast.success("Conta criada. Confirme o e-mail que enviamos para começar.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        throw new Error(
+          error.message === "Invalid login credentials"
+            ? "E-mail ou senha incorretos."
+            : error.message,
+        );
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível continuar");
@@ -64,13 +58,11 @@ function EntrarPage() {
   }
 
   async function handleGoogle() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
     });
-    if (result.error) {
-      toast.error("Não foi possível entrar com o Google");
-      return;
-    }
+    if (error) toast.error("Não foi possível entrar com o Google");
   }
 
   return (
@@ -92,23 +84,13 @@ function EntrarPage() {
         </div>
 
         <h1 className="mt-6 text-2xl font-semibold leading-none tracking-tight">
-          {mode === "entrar" ? "Entrar na sua conta" : "Criar sua conta"}
+          Entrar na sua conta
         </h1>
         <p className="mt-2 text-[13px] text-ink-soft">
           Acompanhe suas vagas, o funil de candidatos e o que precisa da sua atenção.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-3">
-          {mode === "criar" ? (
-            <Field label="Seu nome">
-              <input
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                className="w-full rounded-[10px] bg-paper/70 px-3 py-2 text-[14px] outline-none ring-1 ring-white/10 focus:ring-brand/40"
-                placeholder="Como devemos te chamar"
-              />
-            </Field>
-          ) : null}
           <Field label="E-mail">
             <input
               type="email"
@@ -136,27 +118,22 @@ function EntrarPage() {
             disabled={busy}
             className="w-full rounded-full bg-brand py-2.5 text-[13px] font-medium text-brand-ink transition-transform hover:-translate-y-px disabled:opacity-60"
           >
-            {mode === "entrar" ? "Entrar" : "Criar conta"}
+            Entrar
           </button>
         </form>
 
-        <button
-          type="button"
-          onClick={handleGoogle}
-          className="mt-3 w-full rounded-full bg-paper py-2.5 text-[13px] font-medium ring-1 ring-white/10 transition-transform hover:-translate-y-px"
-        >
-          Continuar com o Google
-        </button>
-
-        <p className="mt-5 text-center text-[12px] text-ink-soft">
-          {mode === "entrar" ? "Ainda não tem conta?" : "Já tem conta?"}{" "}
+        {GOOGLE_LOGIN ? (
           <button
             type="button"
-            className="font-medium text-brand"
-            onClick={() => setMode(mode === "entrar" ? "criar" : "entrar")}
+            onClick={handleGoogle}
+            className="mt-3 w-full rounded-full bg-paper py-2.5 text-[13px] font-medium ring-1 ring-white/10 transition-transform hover:-translate-y-px"
           >
-            {mode === "entrar" ? "Criar agora" : "Entrar"}
+            Continuar com o Google
           </button>
+        ) : null}
+
+        <p className="mt-5 text-center text-[12px] text-ink-soft">
+          Ainda não tem acesso? Peça ao administrador do sistema para cadastrar você.
         </p>
       </div>
     </div>

@@ -638,7 +638,7 @@ function CandidateView() {
                   >
                     <span className="text-[13px]">{answer.question_text}</span>
                     <span className="flex items-center gap-2">
-                      <span className="text-[13px] font-medium">{answer.answer}</span>
+                      <AnswerValue value={answer.answer} />
                       {answer.is_disqualifying ? <Chip tone="rose">Eliminatória</Chip> : null}
                     </span>
                   </li>
@@ -1109,4 +1109,51 @@ function RejectForm({
       </div>
     </Panel>
   );
+}
+
+const FILE_PREFIX = "arquivo:";
+
+/** Respostas de upload chegam como "arquivo:<caminho no bucket curriculos>"; links viram links. */
+function AnswerValue({ value }: { value: string | null }) {
+  const [opening, setOpening] = useState(false);
+  const text = value ?? "";
+
+  if (text.startsWith(FILE_PREFIX)) {
+    const path = text.slice(FILE_PREFIX.length);
+    const fileName = path.split("/").pop()?.replace(/^[0-9a-f-]{36}-/, "") ?? path;
+    return (
+      <button
+        type="button"
+        disabled={opening}
+        className="inline-flex items-center gap-1 text-[13px] font-medium text-brand underline-offset-2 hover:underline disabled:opacity-60"
+        onClick={async () => {
+          setOpening(true);
+          const { data, error } = await supabase.storage.from("curriculos").createSignedUrl(path, 60 * 10);
+          setOpening(false);
+          if (error || !data) {
+            toast.error("Não foi possível abrir o arquivo.");
+            return;
+          }
+          window.open(data.signedUrl, "_blank", "noopener");
+        }}
+      >
+        {opening ? "Abrindo…" : fileName} <ExternalLink className="size-3.5" />
+      </button>
+    );
+  }
+
+  if (/^https?:\/\//i.test(text)) {
+    return (
+      <a
+        href={text}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 break-all text-[13px] font-medium text-brand underline-offset-2 hover:underline"
+      >
+        {text} <ExternalLink className="size-3.5" />
+      </a>
+    );
+  }
+
+  return <span className="text-[13px] font-medium">{text}</span>;
 }

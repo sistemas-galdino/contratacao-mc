@@ -26,11 +26,17 @@ export function useSession() {
   return { session, loading };
 }
 
+/** bootstrap_current_user raises 42501 when the account was not added by the administrator. */
+export function isAccessDenied(error: unknown) {
+  return (error as { code?: string } | null)?.code === "42501";
+}
+
 /** Ensures the signed-in user is linked to a company and returns it. */
 export function useCompany(enabled: boolean) {
   return useQuery({
     queryKey: ["company"],
     enabled,
+    retry: (failureCount, error) => !isAccessDenied(error) && failureCount < 3,
     queryFn: async () => {
       const { data: companyId, error } = await supabase.rpc("bootstrap_current_user", {});
       if (error) throw error;

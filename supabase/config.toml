@@ -1,1 +1,3 @@
+# Nome usado só pela CLI do Supabase em desenvolvimento local.
+# O projeto na nuvem de cada instalação é vinculado com: npx supabase link --project-ref <ref>
 project_id = "contratacao"

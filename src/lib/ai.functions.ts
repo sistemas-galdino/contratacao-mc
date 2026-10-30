@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { streamText, Output } from "ai";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { AI_MODEL, AI_PROVIDER_OPTIONS, createResponsesProvider } from "./ai-gateway.server";
+import { AI_PROVIDER_OPTIONS, aiModel, createResponsesProvider } from "./ai-gateway.server";
 import { skillTargets } from "./suggestions";
 
 const SYSTEM = [
@@ -15,7 +15,7 @@ const SYSTEM = [
 async function run<T>(schema: z.ZodType<T>, prompt: string): Promise<T> {
   const provider = createResponsesProvider();
   const result = streamText({
-    model: provider.responses(AI_MODEL),
+    model: provider.responses(aiModel()),
     system: SYSTEM,
     prompt,
     output: Output.object({ schema }),
@@ -633,7 +633,7 @@ export const aiAnalyzeInterview = createServerFn({ method: "POST" })
     const system = INTERVIEW_PROMPT.replace(/\{\{[^}]+\}\}/g, "(ver dados enviados na mensagem)");
     const spoken = [data.transcript, data.file_text].filter((s) => s.trim()).join("\n\n");
     const result = streamText({
-      model: provider.responses(AI_MODEL),
+      model: provider.responses(aiModel()),
       system: `${SYSTEM}\n\n${system}`,
       prompt: [
         "Analise a entrevista abaixo seguindo exatamente as regras do sistema. Responda no formato estruturado solicitado.",

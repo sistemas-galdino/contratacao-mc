@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useCompany, useSession } from "@/hooks/use-session";
+import { isAccessDenied, useCompany, useSession } from "@/hooks/use-session";
 
 function Blobs() {
   return (
@@ -101,11 +101,36 @@ export function AppShell({ children }: { children: ReactNode }) {
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { session, loading } = useSession();
   const navigate = useNavigate();
-  const { isLoading: companyLoading } = useCompany(Boolean(session));
+  const { isLoading: companyLoading, error: companyError } = useCompany(Boolean(session));
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/entrar" });
   }, [loading, session, navigate]);
+
+  if (session && companyError) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background px-5">
+        <div className="w-full max-w-[420px] rounded-[20px] surface p-7 text-center">
+          <h1 className="text-xl font-semibold tracking-tight">Acesso não liberado</h1>
+          <p className="mt-2 text-[13px] text-ink-soft">
+            {isAccessDenied(companyError)
+              ? "Sua conta ainda não faz parte da equipe deste sistema. Peça ao administrador para cadastrar você."
+              : "Não conseguimos carregar os dados da sua empresa. Tente novamente em instantes."}
+          </p>
+          <button
+            type="button"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              navigate({ to: "/entrar" });
+            }}
+            className="mt-6 w-full rounded-full bg-brand py-2.5 text-[13px] font-medium text-brand-ink"
+          >
+            Sair
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading || !session || companyLoading) {
     return (
