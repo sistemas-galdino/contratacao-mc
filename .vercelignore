@@ -1,0 +1,8 @@
+# Nunca enviar as chaves locais para o Vercel: as variáveis vão pelo `npm run publicar`.
+.env
+.env.*
+!.env.example
+.output
+.vercel
+supabase/.temp
+docs/*.pdf

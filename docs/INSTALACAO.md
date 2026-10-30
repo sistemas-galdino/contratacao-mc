@@ -18,9 +18,12 @@ Você vai precisar de um computador (Mac, Windows ou Linux) com internet e de co
 | --- | --- | --- | --- |
 | GitHub | Baixar o sistema | Grátis | github.com/signup |
 | Supabase | Banco de dados, login e arquivos | Grátis (até 2 projetos) | supabase.com |
-| Cloudflare | Deixar o sistema na internet | Grátis | dash.cloudflare.com/sign-up |
+| Vercel | Deixar o sistema na internet | Grátis para testar; Pro (US$ 20/mês) para uso na empresa | vercel.com/signup |
 | OpenAI | Recursos de IA do sistema (opcional) | Pago por uso | platform.openai.com |
 | Claude **ou** ChatGPT | Usar o Claude Code **ou** o Codex | Assinatura | claude.ai **ou** chatgpt.com |
+
+> **Sobre o Vercel:** o plano grátis (Hobby) é só para uso pessoal e não comercial. Use-o para
+> testar; quando a empresa começar a usar o sistema com candidatos de verdade, assine o plano **Pro**.
 
 > **Acesso ao repositório:** o sistema fica num repositório privado no GitHub. Peça acesso a quem te
 > enviou o sistema, informando o seu usuário do GitHub, e aceite o convite que chega por e-mail.
@@ -101,7 +104,7 @@ Logo no começo o assistente pergunta, numa mensagem só:
 3. **Supabase:** se já tem conta e se prefere um **projeto novo** (recomendado) ou um projeto existente
    vazio.
 4. **Chave da OpenAI** (opcional, pode mandar depois).
-5. **Publicar na internet agora** ou só testar no computador primeiro.
+5. **Publicar na internet agora** (no Vercel) ou só testar no computador primeiro.
 
 > Para os candidatos se inscreverem pelo link da vaga, o sistema precisa estar publicado. Você pode
 > testar no computador primeiro e publicar depois, pedindo `/publicar`.
@@ -146,21 +149,20 @@ da sua empresa aparece no topo.
 
 ## 9. Publicar na internet (Você + Assistente)
 
-1. **Você:** crie a conta grátis em **dash.cloudflare.com/sign-up** e confirme o e-mail.
-2. **Assistente:** pede autorização ao Cloudflare. Abre uma página no navegador: clique em **Allow**.
-   Se o navegador não abrir, ele vai pedir para você digitar `! npx wrangler login` (Claude Code) ou
-   rodar `npx wrangler login` no Terminal.
-3. **Assistente:** publica o sistema e mostra o endereço, algo como
-   `https://contratacao.suaempresa.workers.dev`.
-4. **Você:** abra o endereço e entre com o seu e-mail e senha.
+1. **Você:** crie a conta em **vercel.com/signup** (pode entrar com a conta do GitHub).
+2. **Assistente:** conecta ao Vercel e mostra um link com um código. **Você:** abra o link, entre na
+   conta e clique em **Confirm**/**Allow**. Se não funcionar, ele vai pedir para você digitar
+   `! npx vercel login` (Claude Code) ou rodar `npx vercel login` no Terminal.
+3. **Assistente:** cria o projeto no Vercel, envia as configurações e publica. Leva de 1 a 3 minutos.
+4. **Assistente:** mostra o endereço do sistema, algo como `https://contratacao-suaempresa.vercel.app`.
+5. **Você:** abra o endereço e entre com o seu e-mail e senha.
 
-> **Primeira publicação:** o Cloudflare pode pedir para escolher um subdomínio `workers.dev`. Se o
-> assistente avisar que o comando parou nessa pergunta, rode `npm run publicar` no Terminal e responda,
-> ou abra **dash.cloudflare.com → Workers & Pages** uma vez.
+> **Use sempre o endereço curto** que o assistente informar. O Vercel também cria endereços longos, com
+> letras aleatórias, que pedem login do Vercel: candidatos não conseguem abri-los.
 
 Esse endereço é o que vai nos links das vagas enviados aos candidatos. Se quiser usar um domínio próprio
-(como `vagas.suaempresa.com.br`), o Cloudflare permite configurar depois em **Workers & Pages → seu
-Worker → Settings → Domains & Routes**.
+(como `vagas.suaempresa.com.br`), configure depois em **vercel.com → seu projeto → Settings → Domains**
+e peça ao assistente para atualizar o endereço no Supabase.
 
 ## 10. Primeiros passos no sistema
 
@@ -172,7 +174,7 @@ Worker → Settings → Domains & Routes**.
    o endereço que abrir no navegador: esse é o link que você divulga para os candidatos.
 4. Acompanhe os candidatos pelo **Painel** e pela página de cada vaga.
 
-> Trabalhe sempre pelo **endereço publicado** (o `.workers.dev`), não pelo `localhost`. Os links que o
+> Trabalhe sempre pelo **endereço publicado** (o `.vercel.app`), não pelo `localhost`. Os links que o
 > sistema gera usam o endereço em que você está, e o `localhost` só funciona no seu computador.
 
 ## 11. Uso no dia a dia
@@ -187,7 +189,7 @@ Abra o assistente na pasta do sistema e peça em português:
 | "Troque a senha da Maria" | Gera uma senha nova |
 | "Tire o acesso do Pedro" | Remove o acesso (o histórico das vagas continua) |
 | "Atualize o sistema" ou `/atualizar` | Baixa a versão nova, atualiza o banco e republica |
-| "Publique de novo" ou `/publicar` | Republica no Cloudflare |
+| "Publique de novo" ou `/publicar` | Republica no Vercel |
 | "O sistema está com problema" | Roda uma checagem completa e corrige |
 
 ## 12. Segurança
@@ -209,6 +211,7 @@ Abra o assistente na pasta do sistema e peça em português:
 | "E-mail ou senha incorretos" | Peça ao assistente: "troque a senha de fulano@empresa.com". |
 | Tela "Acesso não liberado" | A pessoa não foi cadastrada: "adicione fulano@empresa.com ao sistema". |
 | A IA não gera nada | Confira o crédito na OpenAI e peça: "verifique a chave da OpenAI". |
+| O candidato vê uma tela de login do Vercel | O link usado é o endereço longo. Envie o endereço curto (`.vercel.app`) que o assistente informou. |
 | Qualquer outra coisa | Peça ao assistente: "rode a verificação do sistema e me diga o que está errado". |
 
 ## Apêndice A — Login com Google (opcional)
@@ -239,7 +242,7 @@ npm run empresa -- --nome "Nome da empresa"
 npm run usuario:adicionar -- --email voce@empresa.com --nome "Seu nome" --dono
 npm run verificar
 npm run dev                             # teste em http://localhost:8080
-npx wrangler login
+npx vercel login
 npm run publicar
-npm run supabase:endereco -- --url <ENDEREÇO .workers.dev> --token <TOKEN sbp_...>
+npm run supabase:endereco -- --url <ENDEREÇO .vercel.app> --token <TOKEN sbp_...>
 ```

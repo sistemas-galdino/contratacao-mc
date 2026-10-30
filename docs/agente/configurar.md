@@ -27,7 +27,7 @@ computador dela e, se ela quiser, publicar na internet. Ela provavelmente não �
 
 1. `node -v` → precisa ser **20.19 ou mais novo** (recomendado 22 ou 24). Sem Node: peça para instalar a
    versão LTS em https://nodejs.org, fechar e abrir o terminal/assistente de novo.
-2. `npm install` (instala o sistema e as ferramentas do Supabase e do Cloudflare dentro do projeto).
+2. `npm install` (instala o sistema e as ferramentas do Supabase e do Vercel dentro do projeto).
 3. Se existir `.env`: `npm run verificar` e pule para o passo correspondente ao que falta.
 
 ## Passo 1 — Perguntas (uma mensagem só)
@@ -38,8 +38,10 @@ computador dela e, se ela quiser, publicar na internet. Ela provavelmente não �
    ou usar um projeto existente **vazio**?
 4. **Chave da OpenAI** (opcional): sem ela o sistema funciona, mas sem os recursos de IA. Cria-se em
    https://platform.openai.com/api-keys e a conta precisa ter crédito. Ela pode mandar depois.
-5. **Publicar na internet agora** (Cloudflare, plano gratuito) ou só testar no computador por enquanto?
-   Explique: para candidatos se inscreverem pelo link da vaga, o sistema precisa estar publicado.
+5. **Publicar na internet agora** (Vercel) ou só testar no computador por enquanto? Explique: para
+   candidatos se inscreverem pelo link da vaga, o sistema precisa estar publicado. O plano grátis do
+   Vercel (Hobby) serve para testar; para uso pela empresa, os termos do Vercel exigem o plano Pro
+   (US$ 20/mês).
 
 ## Passo 2 — Acesso ao Supabase
 
@@ -103,20 +105,26 @@ existente; não mostre a chave na conversa).
 
 Se ela não quiser publicar agora, pule para o passo 8.
 
-## Passo 7 — Publicar na internet (Cloudflare Workers, gratuito)
+## Passo 7 — Publicar na internet (Vercel)
 
-1. Ela precisa de conta em https://dash.cloudflare.com/sign-up (gratuita).
-2. `npx wrangler login` — abre o navegador para autorizar. Se você não conseguir abrir o navegador,
-   peça para ela rodar no terminal (no Claude Code: digitar `! npx wrangler login`). Confira com
-   `npx wrangler whoami`.
-3. `npm run publicar` — gera o sistema e envia as chaves do servidor como segredos do Cloudflare.
-   - Na primeira publicação o Cloudflare pode pedir para escolher um subdomínio `workers.dev`. Se o
-     comando parar nessa pergunta, peça para ela rodar `npm run publicar` no próprio terminal e
-     responder (ou abrir dash.cloudflare.com → Workers & Pages uma vez, que o subdomínio é criado).
-4. Pegue o endereço que termina em `.workers.dev` na saída e rode:
+1. Ela precisa de conta em https://vercel.com/signup. Para testar, o plano Hobby (grátis) basta; para a
+   empresa usar de verdade, os termos do Vercel pedem o plano Pro.
+2. `npx vercel login` — mostra um link e um código. Passe o link para a pessoa abrir, entrar na conta e
+   aprovar; o comando termina sozinho depois disso (rode em segundo plano e aguarde, pode levar alguns
+   minutos). Se não funcionar, peça para ela rodar no terminal (no Claude Code: digitar
+   `! npx vercel login`). Confira com `npx vercel whoami`.
+   - Se a conta tiver mais de um time, pergunte em qual publicar e grave o slug em `VERCEL_SCOPE=`
+     no `.env`.
+3. `npm run publicar` — na primeira vez cria o projeto `contratacao` no Vercel; depois envia as
+   variáveis do `.env` e faz o deploy de produção (o build roda no Vercel e leva de 1 a 3 minutos).
+4. Na saída, pegue o endereço **curto** de produção, que aparece em `Aliased` (ex.:
+   `https://contratacao-xyz.vercel.app`). **Não use** o endereço longo, com letras aleatórias: ele
+   fica protegido pelo login do Vercel e os candidatos não conseguiriam abrir. Se não encontrar o
+   endereço curto, veja em vercel.com → projeto → **Domains**. Depois rode:
    `npm run supabase:endereco -- --url <ENDEREÇO> --token <TOKEN>`
    (grava `APP_URL` no `.env` e libera o endereço no login do Supabase).
-5. Peça para ela abrir o endereço publicado e entrar. É esse endereço que vai nos links das vagas.
+5. Teste numa janela anônima do navegador: o endereço deve abrir a tela de login do sistema, sem
+   pedir login do Vercel. Peça para ela entrar. É esse endereço que vai nos links das vagas.
 
 ## Passo 8 — Entrega
 
@@ -141,5 +149,8 @@ Resuma para a pessoa:
 | `verificar`: modelo da OpenAI indisponível | Liste os modelos da conta: `curl https://api.openai.com/v1/models -H "Authorization: Bearer <CHAVE>"`. Escolha um modelo de texto recente, grave em `OPENAI_MODEL=` no `.env`, rode `npm run verificar` e, se já publicado, `npm run publicar`. |
 | Login: "E-mail ou senha incorretos" | `npm run usuario:senha -- --email <email>` gera uma senha nova. |
 | Tela "Acesso não liberado" | A conta não está na equipe: `npm run usuario:adicionar -- --email <email> --nome "<nome>"`. |
-| Publicado, mas a IA não responde | Faltam segredos no Cloudflare: confira `OPENAI_API_KEY` no `.env` e rode `npm run publicar` de novo. |
-| `npm run publicar` pede login | Rode `npx wrangler login` (passo 7). |
+| Publicado, mas a IA não responde | Confira `OPENAI_API_KEY` no `.env` e rode `npm run publicar` de novo (ele reenvia as variáveis). |
+| `npm run publicar` pede login | Rode `npx vercel login` (passo 7). |
+| Endereço publicado pede login do Vercel | Use o endereço curto de produção (passo 7.4). Se mesmo ele pedir login: vercel.com → projeto → Settings → Deployment Protection → desligue "Vercel Authentication". |
+| Deploy falha falando em região (`gru1`) | Apague a linha `"regions"` do `vercel.json` e rode `npm run publicar` de novo. |
+| Página publicada mostra erro de Supabase | Faltaram variáveis no build: rode `npm run publicar` de novo e confira em vercel.com → projeto → Settings → Environment Variables. |

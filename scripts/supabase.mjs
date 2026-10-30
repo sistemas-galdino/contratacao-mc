@@ -4,7 +4,7 @@
 //     espera o projeto ficar pronto, cria as tabelas (migrações), busca as chaves, preenche o .env
 //     e fecha o cadastro aberto de contas (só o administrador cria acessos).
 //
-//   npm run supabase:endereco -- --url https://contratacao.suaconta.workers.dev --token sbp_...
+//   npm run supabase:endereco -- --url https://contratacao-suaempresa.vercel.app --token sbp_...
 //     grava APP_URL no .env e libera esse endereço no login do Supabase.
 //
 // O token também pode vir da variável SUPABASE_ACCESS_TOKEN. Ele não é gravado em lugar nenhum.

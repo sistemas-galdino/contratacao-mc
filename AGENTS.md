@@ -37,9 +37,10 @@ Se ainda não existir `.env`, o sistema não foi configurado: ofereça rodar o r
 
 - **Stack:** TanStack Start (React 19 + Vite), Tailwind 4, Supabase (Postgres, Auth, Storage),
   OpenAI pela Responses API (`src/lib/ai-gateway.server.ts`, modelo em `OPENAI_MODEL`).
-- **Publicação:** Cloudflare Workers (`npm run publicar` → `scripts/publicar.mjs`). O build embute as
-  variáveis `VITE_*`; as do servidor (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `OPENAI_API_KEY`,
-  `OPENAI_MODEL`) vão como segredos do Worker.
+- **Publicação:** Vercel (`npm run publicar` → `scripts/publicar.mjs`). O script envia as variáveis do
+  `.env` para o projeto no Vercel (as `VITE_*` entram no build; `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
+  `OPENAI_API_KEY` e `OPENAI_MODEL` ficam para o servidor) e faz o deploy de produção; o build roda no
+  Vercel (`vercel.json`, região `gru1`). O `.vercelignore` impede que o `.env` seja enviado.
 - **Acesso:** uma empresa por instalação. Não há cadastro aberto: o administrador libera cada pessoa
   (`scripts/admin.mjs`). `bootstrap_current_user` (SQL) devolve a empresa de quem está logado e barra
   contas sem vínculo (erro 42501 → tela "Acesso não liberado").
@@ -58,5 +59,5 @@ npm run lint           # ESLint
 npx tsc --noEmit       # checagem de tipos
 npm run verificar      # confere a instalação (.env, banco, chaves, OpenAI)
 npm run db:aplicar     # aplica migrações novas no Supabase vinculado
-npm run publicar       # publica no Cloudflare Workers
+npm run publicar       # publica no Vercel
 ```

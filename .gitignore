@@ -39,3 +39,6 @@ dist-ssr
 # Supabase CLI (vínculo local com o projeto)
 supabase/.temp/
 supabase/.branches/
+
+# Vercel (vínculo local com o projeto)
+.vercel/

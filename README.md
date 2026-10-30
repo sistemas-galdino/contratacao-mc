@@ -4,8 +4,8 @@ Sistema completo para conduzir processos seletivos: cadastro de vagas com apoio 
 para candidatos, assessment, entrevistas, case técnico, análise de compatibilidade e acompanhamento do
 candidato por link individual.
 
-Cada empresa instala o sistema na **própria conta do Supabase** (banco de dados) e publica no **próprio
-Cloudflare** (gratuito). A configuração técnica é feita por um assistente de IA — **Claude Code** ou
+Cada empresa instala o sistema na **própria conta do Supabase** (banco de dados) e publica na **própria
+conta do Vercel**. A configuração técnica é feita por um assistente de IA — **Claude Code** ou
 **Codex** — a partir deste repositório.
 
 ## Instalação rápida
@@ -32,7 +32,7 @@ Peça ao assistente, em português:
 | "Quem tem acesso?" | Lista a equipe |
 | "Troque a senha do João" | Gera uma senha nova |
 | "Atualize o sistema" (`/atualizar`) | Baixa a versão nova, atualiza o banco e republica |
-| "Publique de novo" (`/publicar`) | Republica no Cloudflare |
+| "Publique de novo" (`/publicar`) | Republica no Vercel |
 | "Algo não está funcionando" | Roda `npm run verificar` e corrige |
 
 ## O que você precisa ter
@@ -40,7 +40,7 @@ Peça ao assistente, em português:
 | Serviço | Para quê | Custo |
 | --- | --- | --- |
 | [Supabase](https://supabase.com) | Banco de dados, login e arquivos | Grátis (até 2 projetos) |
-| [Cloudflare](https://dash.cloudflare.com/sign-up) | Deixar o sistema na internet | Grátis |
+| [Vercel](https://vercel.com/signup) | Deixar o sistema na internet | Grátis para testar (Hobby); uso comercial exige o Pro, US$ 20/mês |
 | [OpenAI](https://platform.openai.com) | Recursos de IA (opcional) | Pago por uso |
 | Claude Code ou Codex | Assistente que faz a instalação | Assinatura do Claude ou do ChatGPT |
 
@@ -52,12 +52,12 @@ cp .env.example .env     # ou use o /configurar
 npm run dev              # http://localhost:8080
 npm run verificar        # confere .env, banco, chaves e OpenAI
 npm run db:aplicar       # aplica migrações no Supabase vinculado
-npm run publicar         # build + deploy no Cloudflare Workers
+npm run publicar         # envia as variáveis e publica no Vercel
 npm run guia:pdf         # regenera docs/Guia-de-Instalacao.pdf a partir de docs/INSTALACAO.md
 ```
 
 - Stack: TanStack Start (React 19 + Vite), Tailwind 4, Supabase, OpenAI (Responses API).
 - Banco: `supabase/migrations/` (aplicadas em ordem pela CLI do Supabase).
 - Scripts de administração: `scripts/admin.mjs` (empresa e equipe), `scripts/supabase.mjs`
-  (ligar a um projeto), `scripts/publicar.mjs` (deploy).
+  (ligar a um projeto), `scripts/publicar.mjs` (deploy no Vercel).
 - Instruções para assistentes de IA: `AGENTS.md` e `docs/agente/`.

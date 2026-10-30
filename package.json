@@ -106,7 +106,7 @@
     "supabase": "2.122.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "8.1.5",
-    "wrangler": "4.152.0"
+    "vercel": "65.1.0",
+    "vite": "8.1.5"
   }
 }

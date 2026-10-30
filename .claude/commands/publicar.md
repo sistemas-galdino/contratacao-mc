@@ -1,5 +1,5 @@
 ---
-description: Publica (ou republica) o sistema na internet pelo Cloudflare Workers
+description: Publica (ou republica) o sistema na internet pelo Vercel
 ---
 
 Siga o passo 7 de `docs/agente/configurar.md`. Antes, rode `npm run verificar` e resolva o que estiver
