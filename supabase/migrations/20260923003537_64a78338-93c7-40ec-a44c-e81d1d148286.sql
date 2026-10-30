@@ -1,0 +1,1 @@
+DELETE FROM public.jobs WHERE title IN ('Assistente Comercial Teste', 'Analista Financeiro Teste', 'Analista de Customer Success');

@@ -1,0 +1,2 @@
+create policy "anon envia curriculo" on storage.objects for insert to anon, authenticated with check (bucket_id = 'curriculos');
+create policy "empresa le curriculos" on storage.objects for select to authenticated using (bucket_id = 'curriculos');

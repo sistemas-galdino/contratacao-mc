@@ -1,0 +1,1 @@
+ALTER TABLE public.job_cases ADD COLUMN IF NOT EXISTS send_after text NOT NULL DEFAULT 'entrevista';
