@@ -108,11 +108,10 @@ for (let i = 0; i < tokens.length; i++) {
   i = j - 1;
 }
 
-// "O que você faz:" em negrito vira selo.
-body = body.replace(
-  /<strong>O que você faz:<\/strong>/g,
-  '<span class="who you">O que você faz</span>',
-);
+// "O que você faz:" em negrito vira selo. E-mails de exemplo (maria@empresa.com) não viram links.
+body = body
+  .replace(/<strong>O que você faz:<\/strong>/g, '<span class="who you">O que você faz</span>')
+  .replace(/<a href="mailto:[^"]*">([^<]*)<\/a>/g, "$1");
 
 const toc = sections
   .map((s) => {
@@ -168,7 +167,6 @@ const html = `<!doctype html>
   .cover .steps span b { color: var(--brand); font-weight: 600; margin-right: 1.5mm; }
   .cover .meta { position: absolute; left: 22mm; right: 22mm; bottom: 24mm; display: flex; justify-content: space-between; font-size: 8.8pt; color: #8f8f88; border-top: 1px solid #2c2c29; padding-top: 5mm; }
   .cover .meta code { font-family: "IBM Plex Mono", monospace; color: #d9d9d2; background: none; border: 0; padding: 0; }
-  a[href^="mailto:"] { text-decoration: none; }
 
   .toc { break-after: page; }
   .toc h2 { font: 700 22pt "Bricolage Grotesque", sans-serif; margin: 0 0 2mm; letter-spacing: -0.01em; }
@@ -190,7 +188,9 @@ const html = `<!doctype html>
   p { margin: 0 0 2.6mm; }
   ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
   li { margin: 0.8mm 0; }
-  a { color: var(--ink); }
+  a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--brand-deep); text-decoration-thickness: 1.5px; text-underline-offset: 2px; overflow-wrap: anywhere; }
+  td a { white-space: nowrap; }
+  .cover .meta a { color: inherit; text-decoration-color: #5a5a54; }
   strong { font-weight: 600; }
   code { font: 9pt "IBM Plex Mono", monospace; background: var(--wash); border: 1px solid var(--line); border-radius: 1.2mm; padding: 0.2mm 1.2mm; }
   pre { background: #111; color: #eaeae4; border-radius: 2.5mm; padding: 4mm 5mm; margin: 2mm 0 4mm; break-inside: avoid; white-space: pre-wrap; word-break: break-word; }
@@ -229,7 +229,7 @@ const html = `<!doctype html>
   <div class="steps">
     <span><b>1</b>Criar as contas</span><span><b>2</b>Abrir o Claude</span><span><b>3</b>Prompt 1: preparar</span><span><b>4</b>Prompt 2: configurar e publicar</span><span><b>5</b>Testar</span>
   </div>
-  <div class="meta"><span>Repositório: <code>github.com/sistemas-galdino/contratacao-mc</code></span><span>${edition}</span></div>
+  <div class="meta"><span>Repositório: <a href="https://github.com/sistemas-galdino/contratacao-mc"><code>github.com/sistemas-galdino/contratacao-mc</code></a></span><span>${edition}</span></div>
 </section>
 <section class="toc">
   <h2>Conteúdo</h2>

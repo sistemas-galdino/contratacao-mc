@@ -182,8 +182,10 @@ substitui o token na instalação: ele não entrega a chave secreta nem muda as 
 claude mcp add --scope local --transport http supabase "https://mcp.supabase.com/mcp?project_ref=<REF>&read_only=true"
 ```
 
-Depois, a pessoa fecha e abre o Claude Code **dentro da pasta do sistema**, digita `/mcp`, escolhe
-**supabase** → **Authenticate** e autoriza no navegador, escolhendo a organização do projeto.
+Depois, a pessoa abre uma conversa nova no Claude Code **na pasta do sistema** (o conector só carrega
+numa conversa nova) e pede para autenticar. Use a ferramenta de autenticação do servidor `supabase` e
+passe o link para ela abrir, escolher a organização do projeto e autorizar (no terminal, o mesmo se faz
+com `/mcp` → **supabase** → **Authenticate**).
 
 **Codex** — `codex mcp add supabase --url "<o mesmo endereço>"` e depois `codex mcp login supabase`
 (abre o navegador). Se a sintaxe tiver mudado, consulte `codex mcp --help`.
