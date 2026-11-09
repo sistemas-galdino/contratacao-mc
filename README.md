@@ -10,17 +10,16 @@ conta do Vercel**. A configuração técnica é feita por um assistente de IA �
 
 ## Instalação rápida
 
-1. Instale [Node.js](https://nodejs.org) (versão LTS) e o [Claude Code](https://claude.com/claude-code)
-   ou o [Codex](https://developers.openai.com/codex).
-2. Baixe este repositório (GitHub Desktop → *Clone repository*, ou `git clone`).
-3. Abra a pasta do projeto no assistente:
-   - **Claude Code:** rode `claude` dentro da pasta e digite **`/configurar`**
-   - **Codex:** rode `codex` dentro da pasta e peça **"configure o sistema"**
-4. Responda às perguntas. O assistente cria o banco, cadastra sua empresa e o administrador, testa e
-   publica.
+Siga o guia [`docs/Guia-de-Instalacao.pdf`](docs/Guia-de-Instalacao.pdf) (fonte:
+[`docs/INSTALACAO.md`](docs/INSTALACAO.md)). Ele traz prompts prontos para colar no Claude Code:
 
-O passo a passo completo, com o caminho de cada clique em cada serviço, está em
-[`docs/INSTALACAO.md`](docs/INSTALACAO.md) e no PDF [`docs/Guia-de-Instalacao.pdf`](docs/Guia-de-Instalacao.pdf).
+1. Crie as contas (GitHub, Supabase, Vercel e, se quiser IA, OpenAI) e abra o Claude Code.
+2. **Prompt 1:** o Claude instala Node, Git e GitHub CLI, faz o login no GitHub e baixa o sistema.
+3. **Prompt 2:** o Claude cria o banco no Supabase, cadastra a empresa e o administrador e publica no
+   Vercel. Você só cola o token do Supabase, a chave da OpenAI e autoriza o login do Vercel.
+
+Já tem o repositório baixado? Abra a pasta no assistente e peça **"configure o sistema"** (no Claude
+Code, **`/configurar`**). O mesmo vale para o **Codex**.
 
 ## Depois de instalado
 

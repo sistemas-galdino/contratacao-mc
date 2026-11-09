@@ -47,13 +47,20 @@ const slug = (text) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+const escapeHtml = (text) =>
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+// Selos de quem faz cada etapa, escritos no título entre parênteses: (Você), (Claude), (Você + Claude).
+const WHO = /\s*\((Você \+ Claude|Você|Claude)\)/;
+
 const renderer = new marked.Renderer();
 renderer.heading = function ({ tokens, depth, text }) {
   let inner = this.parser.parseInline(tokens);
   inner = inner
-    .replace(/\((Você \+ Assistente)\)/, '<span class="who both">Você + Assistente</span>')
+    .replace(/\((Você \+ Claude)\)/, '<span class="who both">Você + Claude</span>')
     .replace(/\((Você)\)/, '<span class="who you">Você</span>')
-    .replace(/\((Assistente)\)/, '<span class="who ai">Assistente</span>');
+    .replace(/\((Claude)\)/, '<span class="who ai">Claude</span>')
+    .replace(/^(\d+\.\s*)?(Prompt \d+) — /, '$1<span class="kicker">$2</span>');
   if (depth === 2) {
     const match = text.match(/^(\d+)\.\s*(.*)$/);
     const appendix = /^Apêndice/.test(text);
@@ -67,17 +74,50 @@ renderer.heading = function ({ tokens, depth, text }) {
   return `<h${depth}>${inner}</h${depth}>`;
 };
 
-let body = marked.parse(md, { renderer, gfm: true });
+// Blocos ```prompt viram cartões "Copie e cole no Claude", com os [campos] destacados.
+renderer.code = function ({ text, lang }) {
+  const code = escapeHtml(text);
+  if (lang === "prompt") {
+    const filled = code.replace(/\[([^\]\n]+)\]/g, "<mark>[$1]</mark>");
+    return `<div class="prompt"><div class="prompt-head">Copie e cole no Claude</div><pre><code>${filled}</code></pre></div>`;
+  }
+  return `<pre><code>${code}</code></pre>`;
+};
 
-// Rótulos "Você" / "Assistente" em negrito no texto viram selos.
-body = body
-  .replace(/<strong>Você:<\/strong>/g, '<span class="who you">Você</span>')
-  .replace(/<strong>Assistente:<\/strong>/g, '<span class="who ai">Assistente</span>');
+// Cada título de seção fica na mesma página que o bloco seguinte (e, se esse bloco termina em ":",
+// também o que ele apresenta, como um prompt).
+const tokens = marked.lexer(md, { gfm: true });
+const render = (list) => marked.parser(list, { renderer, gfm: true });
+let body = "";
+for (let i = 0; i < tokens.length; i++) {
+  const token = tokens[i];
+  if (token.type !== "heading" || token.depth !== 2) {
+    body += render([token]);
+    continue;
+  }
+  const group = [token];
+  let j = i + 1;
+  while (j < tokens.length) {
+    const next = tokens[j++];
+    group.push(next);
+    if (next.type === "space") continue;
+    if (next.type === "paragraph" && next.text.trim().endsWith(":")) continue;
+    break;
+  }
+  body += `<div class="keep">${render(group)}</div>`;
+  i = j - 1;
+}
+
+// "O que você faz:" em negrito vira selo.
+body = body.replace(
+  /<strong>O que você faz:<\/strong>/g,
+  '<span class="who you">O que você faz</span>',
+);
 
 const toc = sections
   .map((s) => {
     const m = s.match(/^(\d+)\.\s*(.*)$/);
-    const label = (m ? m[2] : s).replace(/\s*\((Você|Assistente|Você \+ Assistente)\)/, "");
+    const label = (m ? m[2] : s).replace(WHO, "");
     return `<li><a href="#${slug(s)}"><span class="toc-num">${m ? m[1] : "+"}</span>${label}</a></li>`;
   })
   .join("\n");
@@ -129,7 +169,6 @@ const html = `<!doctype html>
   .cover .meta { position: absolute; left: 22mm; right: 22mm; bottom: 24mm; display: flex; justify-content: space-between; font-size: 8.8pt; color: #8f8f88; border-top: 1px solid #2c2c29; padding-top: 5mm; }
   .cover .meta code { font-family: "IBM Plex Mono", monospace; color: #d9d9d2; background: none; border: 0; padding: 0; }
   a[href^="mailto:"] { text-decoration: none; }
-  h2#apendice-a-login-com-google-opcional { break-before: page; }
 
   .toc { break-after: page; }
   .toc h2 { font: 700 22pt "Bricolage Grotesque", sans-serif; margin: 0 0 2mm; letter-spacing: -0.01em; }
@@ -144,6 +183,8 @@ const html = `<!doctype html>
   h2.section { font: 700 17pt/1.2 "Bricolage Grotesque", sans-serif; letter-spacing: -0.01em; margin: 9mm 0 3.5mm; padding-top: 4mm; border-top: 2px solid var(--ink); display: flex; align-items: center; gap: 3mm; flex-wrap: wrap; break-after: avoid; }
   h2.section .num { display: inline-grid; place-items: center; min-width: 9mm; height: 9mm; padding: 0 2mm; border-radius: 2.5mm; background: var(--brand); color: #000; font: 700 12pt "Bricolage Grotesque", sans-serif; }
   h2.appendix { border-top-style: dashed; }
+  h2.section { break-inside: avoid; }
+  .keep { break-inside: avoid; }
   h2.break { break-before: page; }
   h3 { font: 600 11.5pt "Bricolage Grotesque", sans-serif; margin: 5mm 0 2mm; }
   p { margin: 0 0 2.6mm; }
@@ -167,6 +208,16 @@ const html = `<!doctype html>
   .who.you { background: #111; color: var(--brand); }
   .who.ai { background: #dff4ec; color: #145f49; }
   .who.both { background: var(--brand); color: #000; }
+  .kicker { display: inline-block; font: 600 8pt/1 "IBM Plex Sans", sans-serif; letter-spacing: .05em; text-transform: uppercase; color: #000; border: 1.5px solid var(--ink); border-radius: 99px; padding: 1.4mm 2.4mm; }
+
+  .prompt { margin: 3mm 0 4.5mm; border: 1.5px solid var(--ink); border-radius: 3mm; overflow: hidden; break-inside: avoid; }
+  .prompt-head { background: var(--ink); color: var(--brand); font: 600 7.8pt/1 "IBM Plex Sans", sans-serif; letter-spacing: .06em; text-transform: uppercase; padding: 2.4mm 4.5mm; }
+  .prompt-head::before { content: "▸"; margin-right: 2mm; }
+  .prompt pre { background: #fbfdf4; color: var(--ink); margin: 0; border-radius: 0; padding: 4mm 4.5mm; }
+  .prompt pre code { font: 9.6pt/1.55 "IBM Plex Sans", sans-serif; }
+  .prompt mark, .legend mark { background: var(--brand); color: #000; border-radius: 1mm; padding: 0 0.6mm; font-weight: 600; }
+  .legend > span:nth-child(odd) { justify-self: start; }
+  .legend .prompt-head { border-radius: 1.5mm; padding: 1.6mm 2.6mm; font-size: 7pt; }
 </style>
 </head>
 <body>
@@ -174,19 +225,21 @@ const html = `<!doctype html>
   <div class="glow"></div><div class="glow2"></div>
   <div class="brandmark"><div class="logo">V</div><div><p class="name">Vetor</p><p class="tag">Recrutamento inteligente</p></div></div>
   <h1>Guia de <em>instalação</em></h1>
-  <p class="lead">Do download do repositório ao sistema de contratação funcionando no banco de dados da sua empresa — com o Claude Code ou o Codex fazendo a parte técnica.</p>
+  <p class="lead">Do zero ao sistema de contratação no ar, no banco de dados da sua empresa. Você cola os prompts; o Claude instala, configura e publica.</p>
   <div class="steps">
-    <span><b>1</b>Instalar ferramentas</span><span><b>2</b>Baixar o sistema</span><span><b>3</b>/configurar</span><span><b>4</b>Testar</span><span><b>5</b>Publicar</span>
+    <span><b>1</b>Criar as contas</span><span><b>2</b>Abrir o Claude</span><span><b>3</b>Prompt 1: preparar</span><span><b>4</b>Prompt 2: configurar e publicar</span><span><b>5</b>Testar</span>
   </div>
   <div class="meta"><span>Repositório: <code>github.com/sistemas-galdino/contratacao-mc</code></span><span>${edition}</span></div>
 </section>
 <section class="toc">
   <h2>Conteúdo</h2>
-  <p class="sub">Siga na ordem na primeira instalação. Tempo estimado: 30 a 45 minutos.</p>
+  <p class="sub">Siga na ordem na primeira instalação. Tempo estimado: 30 a 40 minutos.</p>
   <ol>${toc}</ol>
   <div class="legend">
-    <span class="who you">Você</span><span>passos feitos por você, no navegador ou no Terminal</span>
-    <span class="who ai">Assistente</span><span>o Claude Code ou o Codex faz sozinho; você acompanha e aprova</span>
+    <span class="who you">Você</span><span>o que fica com você: criar contas, autorizar no navegador e copiar chaves</span>
+    <span class="who ai">Claude</span><span>o Claude faz sozinho; você acompanha e aprova os comandos</span>
+    <span class="who both">Você + Claude</span><span>o Claude faz e te pede um clique no meio do caminho</span>
+    <span class="prompt-head">Copie e cole no Claude</span><span>texto pronto para colar na conversa; troque o que estiver <mark>[entre colchetes]</mark></span>
   </div>
 </section>
 <main>

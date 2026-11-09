@@ -14,6 +14,8 @@ vai fazer antes de fazer.
 | "troque a senha de ..." | `npm run usuario:senha -- --email ...` (ou `--senha "..."` se ela escolher). |
 | "tire o acesso de ..." | Confirme antes. `npm run usuario:remover -- --email ...` |
 | "mude o nome da empresa" | `npm run empresa -- --nome "..."` |
+| "adicione a minha chave da OpenAI" | Grave em `OPENAI_API_KEY=` no `.env` (sem mostrar a chave), rode `npm run verificar` e, se já estiver publicado (`APP_URL` no `.env`), `npm run publicar`. |
+| "conecte o conector do Supabase" | Siga a seção "Conector do Supabase" de `docs/agente/configurar.md` (somente leitura). |
 | "atualize o sistema" | Siga `docs/agente/atualizar.md`. |
 | "publique / publique de novo" | `npm run publicar` (passo 7 de `docs/agente/configurar.md`). |
 | "algo não funciona" | Rode `npm run verificar` primeiro; ele aponta o problema. |

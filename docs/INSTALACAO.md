@@ -1,48 +1,48 @@
 # Guia de instalação do Vetor
 
-Este guia leva você do zero até o sistema de contratação funcionando, no banco de dados da sua empresa e
-publicado na internet. A parte técnica é feita por um assistente de IA (Claude Code ou Codex). Você cria
-as contas, responde a algumas perguntas e aprova o que ele for fazer.
+Este guia instala o sistema de contratação com a ajuda do **Claude**. Você não precisa saber programar:
+vai copiar alguns textos prontos (os *prompts*), colar no Claude e acompanhar. Ele instala as ferramentas,
+baixa o sistema, cria o banco de dados, cadastra sua empresa e publica tudo na internet.
 
-**Tempo estimado:** de 30 a 45 minutos na primeira vez.
+**O que fica com você:** criar as contas, clicar em "Autorizar" no navegador algumas vezes e copiar
+duas chaves. **Tempo estimado:** de 30 a 40 minutos.
 
-> **Como ler este guia:** os passos marcados com **Você** são feitos por você, no navegador ou no
-> terminal. Os marcados com **Assistente** o Claude Code ou o Codex faz sozinho; você só acompanha e
-> aprova.
+> **Como ler este guia:** os blocos **Copie e cole no Claude** são os prompts — copie o bloco inteiro e
+> cole na conversa com o Claude. Os selos **Você** e **Claude** mostram quem faz cada etapa.
 
-## 1. Antes de começar
+## 1. Crie as contas (Você)
 
-Você vai precisar de um computador (Mac, Windows ou Linux) com internet e de contas nestes serviços:
+É a única parte que o Claude não consegue fazer por você. Crie antes de começar:
 
-| Serviço | Para quê | Custo | Onde criar |
+| Conta | Para quê | Custo | Onde criar |
 | --- | --- | --- | --- |
+| Claude (Pro ou Max) | É quem faz a instalação | Assinatura | claude.ai |
 | GitHub | Baixar o sistema | Grátis | github.com/signup |
 | Supabase | Banco de dados, login e arquivos | Grátis (até 2 projetos) | supabase.com |
 | Vercel | Deixar o sistema na internet | Grátis para testar; Pro (US$ 20/mês) para uso na empresa | vercel.com/signup |
-| OpenAI | Recursos de IA do sistema (opcional) | Pago por uso | platform.openai.com |
-| Claude **ou** ChatGPT | Usar o Claude Code **ou** o Codex | Assinatura | claude.ai **ou** chatgpt.com |
+| OpenAI (opcional) | Recursos de IA do sistema | Pago por uso | platform.openai.com |
 
-> **Sobre o Vercel:** o plano grátis (Hobby) é só para uso pessoal e não comercial. Use-o para
-> testar; quando a empresa começar a usar o sistema com candidatos de verdade, assine o plano **Pro**.
+> **Dica:** no Supabase e no Vercel, clique em **Continue with GitHub** para criar a conta. É mais
+> rápido e você fica com uma senha a menos.
 
-> **Acesso ao repositório:** o sistema fica num repositório privado no GitHub. Peça acesso a quem te
-> enviou o sistema, informando o seu usuário do GitHub, e aceite o convite que chega por e-mail.
+> **Acesso ao sistema:** o repositório é privado. Envie o seu usuário do GitHub para quem te passou o
+> sistema e aceite o convite que chega por e-mail.
 
-## 2. Instalar as ferramentas (Você)
+> **Sobre o Vercel:** o plano grátis (Hobby) é só para uso pessoal e não comercial. Use-o para testar;
+> quando a empresa começar a usar o sistema com candidatos de verdade, assine o plano **Pro**.
 
-**2.1 Node.js** — o motor que roda o sistema no seu computador.
+## 2. Abra o Claude Code (Você)
 
-1. Acesse **nodejs.org** e baixe a versão **LTS**.
-2. Instale com as opções padrão.
-3. Abra o Terminal (Mac: aplicativo *Terminal*; Windows: *PowerShell*) e digite `node -v`.
-   Deve aparecer um número igual ou maior que `v20.19`.
+O Claude Code é o Claude que consegue mexer no seu computador. É a única coisa que você instala à mão.
+Escolha um dos jeitos:
 
-**2.2 Git** — no Mac já vem instalado (se o Mac pedir para instalar as "ferramentas de linha de
-comando", aceite). No Windows, baixe em **git-scm.com** e instale com as opções padrão.
+**No aplicativo do Claude (mais simples)**
 
-**2.3 O assistente de IA** — escolha **um** dos dois.
+1. Baixe o aplicativo em **claude.ai/download**, instale e entre com a sua conta.
+2. Abra o **Claude Code** dentro do aplicativo.
+3. Quando ele pedir uma pasta para trabalhar, escolha **Documentos**.
 
-*Claude Code* (precisa de uma assinatura do Claude: Pro, Max, Team ou Enterprise):
+**No Terminal**
 
 ```
 # Mac ou Linux
@@ -52,197 +52,177 @@ curl -fsSL https://claude.ai/install.sh | bash
 irm https://claude.ai/install.ps1 | iex
 ```
 
-*Codex* (precisa de uma assinatura do ChatGPT: Plus, Pro, Business ou Enterprise):
+Feche e abra o Terminal, entre na pasta Documentos com `cd Documents` e digite `claude`.
 
-```
-npm install -g @openai/codex
-```
+> Sempre que o Claude pedir permissão para rodar um comando, ele explica antes o que vai fazer. Leia e
+> aprove. Se ele oferecer a opção de não perguntar de novo para aquele tipo de comando, pode aceitar.
 
-Feche e abra o Terminal de novo depois de instalar.
+> **Usa o Codex (ChatGPT)?** Os mesmos prompts funcionam nele. Onde o guia fala em Claude, leia Codex.
 
-## 3. Baixar o sistema (Você)
+## 3. Prompt 1 — Preparar o computador (Claude)
 
-**Opção mais simples — GitHub Desktop**
+```prompt
+Quero instalar o sistema de contratação Vetor neste computador. Faça tudo por mim, explicando cada passo numa frase simples. Só me peça algo quando for indispensável, como autorizar um login no navegador.
 
-1. Baixe em **desktop.github.com**, instale e entre com sua conta do GitHub.
-2. Menu **File → Clone repository** → aba **GitHub.com** → escolha **contratacao-mc** → escolha a pasta
-   → **Clone**.
-3. Para abrir o Terminal já dentro da pasta: menu **Repository → Open in Terminal** (no Windows,
-   *Open in Command Prompt*/*PowerShell*).
-
-**Opção pelo Terminal**
-
-```
-git clone https://github.com/sistemas-galdino/contratacao-mc.git
-cd contratacao-mc
+1. Veja o que já está instalado e instale o que faltar: Node.js (versão 22 ou mais nova), Git e GitHub CLI (gh). Prefira formas que não peçam a senha do computador (no Mac sem Homebrew: fnm para o Node e o arquivo oficial do gh). Se alguma etapa for pedir senha ou abrir uma janela, me avise antes e diga o que vai aparecer.
+2. Conecte o GitHub CLI à minha conta: rode gh auth login --web em segundo plano e me mostre o código e o link para eu autorizar no navegador. Depois deixe o Git usando esse mesmo login (gh auth setup-git).
+3. Baixe o repositório sistemas-galdino/contratacao-mc para uma pasta chamada contratacao-mc, dentro desta pasta, e rode npm install nela.
+4. No fim, me diga se deu tudo certo.
 ```
 
-Se o Git pedir login, entre com a sua conta do GitHub (no Windows abre uma janela do navegador; no Mac,
-use o GitHub Desktop ou o GitHub CLI: `gh auth login`).
+**O que você faz:**
 
-## 4. Abrir o assistente e começar (Você)
+- Quando o Claude mostrar um código do GitHub, abra o link, cole o código e clique em **Authorize**.
+- No Mac, pode aparecer uma janela pedindo para instalar as "ferramentas de linha de comando": clique em
+  **Instalar** e espere terminar (alguns minutos). Depois, diga ao Claude: "terminou, pode continuar".
+- Se o Claude disser que não encontrou o repositório, confira se você aceitou o convite do passo 1.
 
-Com o Terminal **dentro da pasta do sistema**:
+> As ferramentas do Supabase e do Vercel não precisam de instalação separada: elas vêm junto com o
+> sistema, no `npm install`.
 
-| Claude Code | Codex |
-| --- | --- |
-| Digite `claude` e faça o login na primeira vez. | Digite `codex` e entre com sua conta do ChatGPT. |
-| Digite **`/configurar`** e aperte Enter. | Escreva **configure o sistema** e aperte Enter. |
+## 4. Prompt 2 — Configurar e publicar o sistema (Claude)
 
-A partir daqui o assistente conduz. Sempre que ele pedir permissão para rodar um comando, leia a frase
-que ele escreveu explicando o que vai fazer e aprove.
+Troque o que está entre colchetes pelos seus dados antes de enviar:
 
-> **No Codex**, alguns comandos precisam de acesso à internet e pedem aprovação extra. Aprove quando ele
-> pedir para rodar comandos como `npm install` ou `npx supabase`.
+```prompt
+Agora entre na pasta contratacao-mc, leia o arquivo docs/agente/configurar.md e siga o roteiro do começo ao fim para configurar o sistema para mim.
 
-## 5. Responder às perguntas (Você)
+Já respondo as perguntas do roteiro:
+- Nome da empresa: [Nome da empresa]
+- Administrador: [Seu nome completo], [seu@email.com]
+- Supabase: crie um projeto novo para o sistema
+- Chave da OpenAI: [vou mandar quando você pedir / não tenho agora]
+- Publicar na internet: sim, no Vercel
+```
 
-Logo no começo o assistente pergunta, numa mensagem só:
+Durante a configuração, o Claude vai te pedir três coisas, uma de cada vez:
 
-1. **Nome da empresa**, como deve aparecer no sistema.
-2. **Seu nome e e-mail** — você vai ser o administrador.
-3. **Supabase:** se já tem conta e se prefere um **projeto novo** (recomendado) ou um projeto existente
-   vazio.
-4. **Chave da OpenAI** (opcional, pode mandar depois).
-5. **Publicar na internet agora** (no Vercel) ou só testar no computador primeiro.
+**1. Token do Supabase**
 
-> Para os candidatos se inscreverem pelo link da vaga, o sistema precisa estar publicado. Você pode
-> testar no computador primeiro e publicar depois, pedindo `/publicar`.
-
-## 6. Gerar o token do Supabase (Você)
-
-O assistente vai pedir um **token de acesso** para criar e configurar o banco por você.
-
-1. Acesse **supabase.com/dashboard/account/tokens** (crie a conta grátis se ainda não tiver).
+1. Acesse **supabase.com/dashboard/account/tokens**.
 2. Clique em **Generate new token**, dê o nome `instalacao-contratacao` e confirme.
-3. Copie o token (começa com `sbp_`) e cole na conversa com o assistente.
+3. Copie o token (começa com `sbp_`) e cole na conversa com o Claude.
 
-**O assistente então:** cria o projeto no Supabase (região São Paulo), espera ficar pronto, cria todas
-as tabelas, busca as chaves de acesso, grava tudo no arquivo `.env` do seu computador e desliga o
-cadastro aberto — só você, como administrador, libera acessos.
+Com ele, o Claude cria o projeto na região de São Paulo, monta o banco, busca as chaves de acesso e fecha
+o cadastro aberto: só quem você liberar entra no sistema.
 
-> O token fica guardado só no seu computador, na ferramenta do Supabase, para o assistente aplicar as
-> atualizações futuras do banco. Ele nunca vai para o GitHub nem para o sistema publicado. Se preferir,
-> apague-o depois na mesma página; numa próxima atualização, basta gerar outro.
+**2. Chave da OpenAI (opcional)**
 
-## 7. Chave da OpenAI — opcional (Você)
+1. Acesse **platform.openai.com/api-keys** e clique em **Create new secret key**.
+2. Copie a chave (começa com `sk-`) e cole na conversa.
+3. Em **Settings → Billing**, adicione crédito. O uso é cobrado por consumo.
 
-Sem esta chave o sistema funciona normalmente, mas sem os recursos de IA (geração do contexto da vaga,
-perguntas, assessment, case, roteiro e análise de entrevistas). Nesse caso ele usa sugestões automáticas.
+Sem a chave o sistema funciona, mas sem os recursos de IA: geração da vaga, perguntas, assessment, case
+e análise de entrevistas. Você pode mandar depois, pedindo: "adicione a minha chave da OpenAI".
 
-1. Acesse **platform.openai.com/api-keys** e entre com sua conta.
-2. Clique em **Create new secret key**, dê um nome e copie a chave (começa com `sk-`).
-3. Em **Settings → Billing**, adicione crédito (o uso é cobrado por consumo).
-4. Cole a chave na conversa quando o assistente pedir.
+**3. Autorização do Vercel**
 
-## 8. Seu acesso e o teste no computador
+O Claude mostra um link. Abra, entre na sua conta do Vercel e confirme. Ele publica o sistema em seguida
+(leva de 1 a 3 minutos).
 
-**Assistente:** cadastra a empresa, cria o seu acesso de administrador e mostra **e-mail e senha**.
+**No fim, o Claude mostra o endereço do sistema, o seu e-mail e a sua senha.**
 
-> **Anote a senha num lugar seguro** (por exemplo, no gerenciador de senhas). Ela aparece uma vez só.
-> Se perder, é só pedir ao assistente: "troque a minha senha".
+> **Anote a senha num lugar seguro**, como um gerenciador de senhas. Ela aparece uma vez só. Se perder,
+> é só pedir ao Claude: "troque a minha senha".
 
-**Assistente:** liga o sistema no seu computador.
+> Se você já abriu o Claude **dentro** da pasta contratacao-mc, pode simplesmente digitar `/configurar`.
 
-**Você:** abra **http://localhost:8080** no navegador, entre com o e-mail e a senha e confira se o nome
-da sua empresa aparece no topo.
+## 5. Teste o sistema (Você)
 
-## 9. Publicar na internet (Você + Assistente)
+1. Abra o endereço que o Claude informou (termina em `.vercel.app`), de preferência numa janela anônima
+   do navegador.
+2. Entre com o seu e-mail e a senha e confira se o nome da sua empresa aparece no topo.
+3. Em **Configurações**, preencha os dados, a missão, os valores e a cultura da empresa e envie
+   documentos (manual, descrição de cargos). A IA usa isso para escrever as vagas e avaliar candidatos.
+4. Crie a primeira vaga em **Nova vaga** e siga as etapas.
+5. Na página da vaga, aprove e publique o formulário. Clique em **Visualizar como candidato** e copie o
+   endereço que abrir: esse é o link que você divulga para os candidatos.
 
-1. **Você:** crie a conta em **vercel.com/signup** (pode entrar com a conta do GitHub).
-2. **Assistente:** conecta ao Vercel e mostra um link com um código. **Você:** abra o link, entre na
-   conta e clique em **Confirm**/**Allow**. Se não funcionar, ele vai pedir para você digitar
-   `! npx vercel login` (Claude Code) ou rodar `npx vercel login` no Terminal.
-3. **Assistente:** cria o projeto no Vercel, envia as configurações e publica. Leva de 1 a 3 minutos.
-4. **Assistente:** mostra o endereço do sistema, algo como `https://contratacao-suaempresa.vercel.app`.
-5. **Você:** abra o endereço e entre com o seu e-mail e senha.
+> Trabalhe sempre pelo endereço `.vercel.app`, nunca pelo `localhost`: os links que o sistema gera usam o
+> endereço em que você está, e o `localhost` só funciona no seu computador.
 
-> **Use sempre o endereço curto** que o assistente informar. O Vercel também cria endereços longos, com
-> letras aleatórias, que pedem login do Vercel: candidatos não conseguem abri-los.
+## 6. Prompt 3 — Conector do Supabase (Você + Claude)
 
-Esse endereço é o que vai nos links das vagas enviados aos candidatos. Se quiser usar um domínio próprio
-(como `vagas.suaempresa.com.br`), configure depois em **vercel.com → seu projeto → Settings → Domains**
-e peça ao assistente para atualizar o endereço no Supabase.
+Opcional. Com o conector do Supabase, você pode fazer perguntas ao Claude sobre os dados do sistema. Ele
+fica em modo **somente leitura**: o Claude consulta, mas não altera nada.
 
-## 10. Primeiros passos no sistema
+```prompt
+Conecte o conector (MCP) do Supabase ao Claude Code neste projeto, em modo somente leitura e limitado ao projeto do sistema, seguindo o passo "Conector do Supabase" do arquivo docs/agente/configurar.md. Depois me diga como autorizar.
+```
 
-1. **Configurações:** preencha dados, missão, valores e cultura da empresa e envie documentos (manual,
-   descrição de cargos). A IA usa isso para escrever vagas e avaliar candidatos.
-2. **Nova vaga:** siga o passo a passo — informações básicas, contexto, competências, requisitos e
-   perguntas, assessment, case e revisão do formulário.
-3. Na página da vaga, aprove e **publique o formulário**. Clique em **Visualizar como candidato** e copie
-   o endereço que abrir no navegador: esse é o link que você divulga para os candidatos.
-4. Acompanhe os candidatos pelo **Painel** e pela página de cada vaga.
+**O que você faz:** feche e abra o Claude **dentro da pasta contratacao-mc**, digite `/mcp`, escolha
+**supabase** e clique em **Authenticate**. No navegador, escolha a organização do projeto e autorize.
 
-> Trabalhe sempre pelo **endereço publicado** (o `.vercel.app`), não pelo `localhost`. Os links que o
-> sistema gera usam o endereço em que você está, e o `localhost` só funciona no seu computador.
+Depois é só perguntar, por exemplo:
 
-## 11. Uso no dia a dia
+- "Quantos candidatos se inscreveram em cada vaga esta semana?"
+- "Quais candidatos da vaga de Assistente Administrativo estão na etapa de entrevista?"
+- "Qual vaga está há mais tempo aberta sem candidatos novos?"
 
-Abra o assistente na pasta do sistema e peça em português:
+## 7. Prompts do dia a dia
 
-| Você diz | O que acontece |
+Abra o Claude sempre **na pasta contratacao-mc** e peça em português:
+
+| Você pede | O que acontece |
 | --- | --- |
 | "Adicione a Maria (maria@empresa.com) ao sistema" | Cria o acesso e mostra a senha para você repassar |
-| "Adicione o Pedro como administrador" | Cria o acesso com perfil de dono |
+| "Adicione o Pedro (pedro@empresa.com) como administrador" | Cria o acesso com perfil de dono |
 | "Quem tem acesso ao sistema?" | Lista a equipe e o último acesso de cada um |
 | "Troque a senha da Maria" | Gera uma senha nova |
-| "Tire o acesso do Pedro" | Remove o acesso (o histórico das vagas continua) |
-| "Atualize o sistema" ou `/atualizar` | Baixa a versão nova, atualiza o banco e republica |
+| "Tire o acesso do Pedro" | Remove o acesso; o histórico das vagas continua |
+| "Adicione a minha chave da OpenAI: sk-..." | Grava a chave e republica |
 | "Publique de novo" ou `/publicar` | Republica no Vercel |
-| "O sistema está com problema" | Roda uma checagem completa e corrige |
+| "O sistema está com problema" | Faz uma checagem completa e corrige |
 
-## 12. Segurança
+## 8. Atualizações
 
-- O arquivo **`.env`**, na pasta do sistema, guarda as chaves da sua instalação. Não compartilhe, não
-  envie por e-mail e não apague. Ele nunca vai para o GitHub. Vale guardar uma cópia num cofre de senhas.
-- Cada pessoa da equipe deve ter o próprio acesso. Não compartilhe a senha de administrador.
-- Ninguém consegue criar conta sozinho: só quem você cadastrar entra no sistema.
+Quando houver uma versão nova do sistema, abra o Claude na pasta contratacao-mc e cole:
+
+```prompt
+Atualize o sistema para a versão mais nova do repositório, seguindo o arquivo docs/agente/atualizar.md, e me conte o que mudou.
+```
+
+No Claude Code, também dá para digitar `/atualizar`. Se o Claude pedir um token do Supabase novo, gere
+como no passo 4.
+
+## 9. Segurança
+
+- O arquivo **`.env`**, na pasta contratacao-mc, guarda as chaves da sua instalação. Não compartilhe,
+  não envie por e-mail e não apague. Ele nunca vai para o GitHub nem para o Vercel. Vale guardar uma
+  cópia num cofre de senhas.
+- O token do Supabase fica guardado só no seu computador, para o Claude aplicar as atualizações do
+  banco. Se preferir, apague-o em supabase.com/dashboard/account/tokens; numa próxima atualização,
+  basta gerar outro.
+- Cada pessoa da equipe deve ter o próprio acesso. Ninguém consegue criar conta sozinho: só entra quem
+  você liberar.
 - Candidatos não têm conta: eles usam o link da vaga e um link individual de acompanhamento.
 
-## 13. Problemas comuns
+## 10. Se algo der errado
 
-| Problema | Solução |
+Na maioria dos casos, basta pedir:
+
+```prompt
+Algo não está funcionando no sistema. Rode a verificação (npm run verificar), me explique o problema em linguagem simples e corrija o que der para corrigir.
+```
+
+Alguns pontos só você resolve:
+
+| Situação | O que fazer |
 | --- | --- |
-| `node -v` não funciona | Instale o Node.js (passo 2.1) e abra o Terminal de novo. |
-| `claude` ou `codex` não é reconhecido | Feche e abra o Terminal. Se continuar, reinstale (passo 2.3). |
-| O Git pede usuário e senha | Use o GitHub Desktop para baixar (passo 3). |
-| "Limite de projetos gratuitos" no Supabase | O plano grátis permite 2 projetos ativos. Pause ou apague um antigo no painel do Supabase. |
-| "E-mail ou senha incorretos" | Peça ao assistente: "troque a senha de fulano@empresa.com". |
-| Tela "Acesso não liberado" | A pessoa não foi cadastrada: "adicione fulano@empresa.com ao sistema". |
-| A IA não gera nada | Confira o crédito na OpenAI e peça: "verifique a chave da OpenAI". |
-| O candidato vê uma tela de login do Vercel | O link usado é o endereço longo. Envie o endereço curto (`.vercel.app`) que o assistente informou. |
-| Qualquer outra coisa | Peça ao assistente: "rode a verificação do sistema e me diga o que está errado". |
+| O Claude não encontra o repositório | Aceite o convite do GitHub que chegou por e-mail e peça para ele tentar de novo. |
+| O computador pede uma senha durante a instalação | É a senha que você usa para entrar no computador. |
+| O Supabase fala em limite de projetos gratuitos | O plano grátis permite 2 projetos ativos. Pause ou apague um projeto antigo no painel do Supabase. |
+| O candidato vê uma tela de login do Vercel | O link enviado é o endereço longo. Envie o endereço curto que termina em `.vercel.app`. |
+| A IA não gera nada | Confira se há crédito na conta da OpenAI. |
 
-## Apêndice A — Login com Google (opcional)
+## Apêndice — Login com Google (opcional)
 
-Por padrão o login é por e-mail e senha. Para habilitar também o botão "Continuar com o Google":
+Por padrão, o login é por e-mail e senha. Para ter também o botão "Continuar com o Google", cole:
 
-1. No **Google Cloud Console** (console.cloud.google.com): **APIs e serviços → Credenciais → Criar
-   credenciais → ID do cliente OAuth → Aplicativo da Web**. Em *URIs de redirecionamento autorizados*,
-   coloque `https://<ref-do-projeto>.supabase.co/auth/v1/callback` (o assistente informa o `ref`).
-2. No **Supabase**: **Authentication → Sign In / Providers → Google**, ative e cole o *Client ID* e o
-   *Client Secret*.
-3. Peça ao assistente: "ative o login com Google" — ele coloca `VITE_GOOGLE_LOGIN=true` no `.env` e
-   republica.
-
-Só entra com Google quem já foi cadastrado com o mesmo e-mail.
-
-## Apêndice B — Instalação manual (sem assistente)
-
-Para quem prefere fazer à mão, no Terminal, dentro da pasta do sistema:
-
+```prompt
+Quero ativar o login com Google no sistema. Siga a seção "Login com Google" do arquivo docs/agente/configurar.md: me guie no Google Cloud Console e faça você o resto.
 ```
-npm install
-npx supabase login                      # abre o navegador
-npx supabase projects create "contratacao" --org-id <ORG> --db-password <SENHA> --region sa-east-1
-npm run supabase:conectar -- --ref <REF> --token <TOKEN sbp_...>
-# edite o .env e preencha OPENAI_API_KEY
-npm run empresa -- --nome "Nome da empresa"
-npm run usuario:adicionar -- --email voce@empresa.com --nome "Seu nome" --dono
-npm run verificar
-npm run dev                             # teste em http://localhost:8080
-npx vercel login
-npm run publicar
-npm run supabase:endereco -- --url <ENDEREÇO .vercel.app> --token <TOKEN sbp_...>
-```
+
+O Claude te guia para criar uma credencial no Google Cloud Console e te pede para colar dois códigos na
+conversa. Ele ativa o Google no Supabase e publica de novo. Se pedir um token do Supabase novo, gere
+como no passo 4. Só entra com o Google quem já foi cadastrado no sistema com o mesmo e-mail.
